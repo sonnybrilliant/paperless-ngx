@@ -175,5 +175,8 @@
 			}
 		}
 	},
-	"defaultProject": "paperless-ui"
+  "defaultProject": "paperless-ui",
+  "cli": {
+    "analytics": "e7d3981e-ec73-4c15-853c-ddab609df7e4"
+  }
 }
