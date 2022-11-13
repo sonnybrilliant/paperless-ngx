@@ -1,26 +1,30 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core'
-import { FormControl, FormGroup } from '@angular/forms'
-import { ActivatedRoute, Router } from '@angular/router'
-import { NgbModal, NgbNav } from '@ng-bootstrap/ng-bootstrap'
-import { PaperlessCorrespondent } from 'src/app/data/paperless-correspondent'
-import { PaperlessDocument } from 'src/app/data/paperless-document'
-import { PaperlessDocumentMetadata } from 'src/app/data/paperless-document-metadata'
-import { PaperlessDocumentType } from 'src/app/data/paperless-document-type'
-import { DocumentTitlePipe } from 'src/app/pipes/document-title.pipe'
-import { DocumentListViewService } from 'src/app/services/document-list-view.service'
-import { OpenDocumentsService } from 'src/app/services/open-documents.service'
-import { CorrespondentService } from 'src/app/services/rest/correspondent.service'
-import { DocumentTypeService } from 'src/app/services/rest/document-type.service'
-import { DocumentService } from 'src/app/services/rest/document.service'
-import { ConfirmDialogComponent } from '../common/confirm-dialog/confirm-dialog.component'
-import { CorrespondentEditDialogComponent } from '../common/edit-dialog/correspondent-edit-dialog/correspondent-edit-dialog.component'
-import { DocumentTypeEditDialogComponent } from '../common/edit-dialog/document-type-edit-dialog/document-type-edit-dialog.component'
-import { PDFDocumentProxy } from 'ng2-pdf-viewer'
-import { ToastService } from 'src/app/services/toast.service'
-import { TextComponent } from '../common/input/text/text.component'
-import { SettingsService } from 'src/app/services/settings.service'
-import { dirtyCheck, DirtyComponent } from '@ngneat/dirty-check-forms'
-import { Observable, Subject, BehaviorSubject } from 'rxjs'
+import {Component, OnInit, OnDestroy, ViewChild} from '@angular/core'
+import {FormControl, FormGroup} from '@angular/forms'
+import {ActivatedRoute, Router} from '@angular/router'
+import {NgbModal, NgbNav} from '@ng-bootstrap/ng-bootstrap'
+import {PaperlessCorrespondent} from 'src/app/data/paperless-correspondent'
+import {PaperlessDocument} from 'src/app/data/paperless-document'
+import {PaperlessDocumentMetadata} from 'src/app/data/paperless-document-metadata'
+import {PaperlessDocumentType} from 'src/app/data/paperless-document-type'
+import {DocumentTitlePipe} from 'src/app/pipes/document-title.pipe'
+import {DocumentListViewService} from 'src/app/services/document-list-view.service'
+import {OpenDocumentsService} from 'src/app/services/open-documents.service'
+import {CorrespondentService} from 'src/app/services/rest/correspondent.service'
+import {DocumentTypeService} from 'src/app/services/rest/document-type.service'
+import {DocumentService} from 'src/app/services/rest/document.service'
+import {ConfirmDialogComponent} from '../common/confirm-dialog/confirm-dialog.component'
+import {
+  CorrespondentEditDialogComponent
+} from '../common/edit-dialog/correspondent-edit-dialog/correspondent-edit-dialog.component'
+import {
+  DocumentTypeEditDialogComponent
+} from '../common/edit-dialog/document-type-edit-dialog/document-type-edit-dialog.component'
+import {PDFDocumentProxy} from 'ng2-pdf-viewer'
+import {ToastService} from 'src/app/services/toast.service'
+import {TextComponent} from '../common/input/text/text.component'
+import {SettingsService} from 'src/app/services/settings.service'
+import {dirtyCheck, DirtyComponent} from '@ngneat/dirty-check-forms'
+import {Observable, Subject, BehaviorSubject} from 'rxjs'
 import {
   first,
   takeUntil,
@@ -29,12 +33,14 @@ import {
   debounceTime,
   distinctUntilChanged,
 } from 'rxjs/operators'
-import { PaperlessDocumentSuggestions } from 'src/app/data/paperless-document-suggestions'
-import { FILTER_FULLTEXT_MORELIKE } from 'src/app/data/filter-rule-type'
-import { StoragePathService } from 'src/app/services/rest/storage-path.service'
-import { PaperlessStoragePath } from 'src/app/data/paperless-storage-path'
-import { StoragePathEditDialogComponent } from '../common/edit-dialog/storage-path-edit-dialog/storage-path-edit-dialog.component'
-import { SETTINGS_KEYS } from 'src/app/data/paperless-uisettings'
+import {PaperlessDocumentSuggestions} from 'src/app/data/paperless-document-suggestions'
+import {FILTER_FULLTEXT_MORELIKE} from 'src/app/data/filter-rule-type'
+import {StoragePathService} from 'src/app/services/rest/storage-path.service'
+import {PaperlessStoragePath} from 'src/app/data/paperless-storage-path'
+import {
+  StoragePathEditDialogComponent
+} from '../common/edit-dialog/storage-path-edit-dialog/storage-path-edit-dialog.component'
+import {SETTINGS_KEYS} from 'src/app/data/paperless-uisettings'
 
 @Component({
   selector: 'app-document-detail',
@@ -42,32 +48,32 @@ import { SETTINGS_KEYS } from 'src/app/data/paperless-uisettings'
   styleUrls: ['./document-detail.component.scss'],
 })
 export class DocumentDetailComponent
-  implements OnInit, OnDestroy, DirtyComponent
-{
+  implements OnInit, OnDestroy, DirtyComponent {
   @ViewChild('inputTitle')
-  titleInput: TextComponent
+  titleInput: TextComponent;
 
-  expandOriginalMetadata = false
-  expandArchivedMetadata = false
+  expandOriginalMetadata = false;
+  expandArchivedMetadata = false;
 
-  error: any
+  error: any;
 
-  networkActive = false
+  networkActive = false;
 
-  documentId: number
-  document: PaperlessDocument
-  metadata: PaperlessDocumentMetadata
-  suggestions: PaperlessDocumentSuggestions
+  documentId: number;
+  document: PaperlessDocument;
+  metadata: PaperlessDocumentMetadata;
+  suggestions: PaperlessDocumentSuggestions;
 
-  title: string
-  titleSubject: Subject<string> = new Subject()
-  previewUrl: string
-  downloadUrl: string
-  downloadOriginalUrl: string
+  title: string;
+  titleSubject: Subject<string> = new Subject();
+  previewUrl: string;
+  downloadUrl: string;
+  downloadOriginalUrl: string;
 
-  correspondents: PaperlessCorrespondent[]
-  documentTypes: PaperlessDocumentType[]
-  storagePaths: PaperlessStoragePath[]
+  correspondents: PaperlessCorrespondent[];
+  documentTypes: PaperlessDocumentType[];
+  storagePaths: PaperlessStoragePath[];
+  googleSharedFolders: [{ 'name': 'MINUTES', 'id': 'MINUTES' }];
 
   documentForm: FormGroup = new FormGroup({
     title: new FormControl(''),
@@ -78,22 +84,23 @@ export class DocumentDetailComponent
     storage_path: new FormControl(),
     archive_serial_number: new FormControl(),
     tags: new FormControl([]),
-  })
+  });
 
-  previewCurrentPage: number = 1
-  previewNumPages: number = 1
+  previewCurrentPage: number = 1;
+  previewNumPages: number = 1;
 
-  store: BehaviorSubject<any>
-  isDirty$: Observable<boolean>
-  unsubscribeNotifier: Subject<any> = new Subject()
-  docChangeNotifier: Subject<any> = new Subject()
+  store: BehaviorSubject<any>;
+  isDirty$: Observable<boolean>;
+  unsubscribeNotifier: Subject<any> = new Subject();
+  docChangeNotifier: Subject<any> = new Subject();
 
-  requiresPassword: boolean = false
-  password: string
+  requiresPassword: boolean = false;
+  password: string;
 
-  ogDate: Date
+  ogDate: Date;
 
-  @ViewChild('nav') nav: NgbNav
+  @ViewChild('nav') nav: NgbNav;
+
   @ViewChild('pdfPreview') set pdfPreview(element) {
     // this gets called when compontent added or removed from DOM
     if (
@@ -102,7 +109,7 @@ export class DocumentDetailComponent
       this.nav?.activeId == 4
     ) {
       // its visible
-      setTimeout(() => this.nav?.select(1))
+      setTimeout(() => this.nav?.select(1));
     }
   }
 
@@ -119,14 +126,15 @@ export class DocumentDetailComponent
     private toastService: ToastService,
     private settings: SettingsService,
     private storagePathService: StoragePathService
-  ) {}
+  ) {
+  }
 
   titleKeyUp(event) {
-    this.titleSubject.next(event.target?.value)
+    this.titleSubject.next(event.target?.value);
   }
 
   get useNativePdfViewer(): boolean {
-    return this.settings.get(SETTINGS_KEYS.USE_NATIVE_PDF_VIEWER)
+    return this.settings.get(SETTINGS_KEYS.USE_NATIVE_PDF_VIEWER);
   }
 
   getContentType() {
@@ -151,20 +159,20 @@ export class DocumentDetailComponent
     this.documentTypeService
       .listAll()
       .pipe(first())
-      .subscribe((result) => (this.documentTypes = result.results))
+      .subscribe((result) => (this.documentTypes = result.results));
 
     this.storagePathService
       .listAll()
       .pipe(first())
-      .subscribe((result) => (this.storagePaths = result.results))
+      .subscribe((result) => (this.storagePaths = result.results));
 
     this.route.paramMap
       .pipe(
         takeUntil(this.unsubscribeNotifier),
         switchMap((paramMap) => {
-          const documentId = +paramMap.get('id')
-          this.docChangeNotifier.next(documentId)
-          return this.documentsService.get(documentId)
+          const documentId = +paramMap.get('id');
+          this.docChangeNotifier.next(documentId);
+          return this.documentsService.get(documentId);
         })
       )
       .pipe(
@@ -198,7 +206,7 @@ export class DocumentDetailComponent
             .subscribe({
               next: (titleValue) => {
                 this.title = titleValue
-                this.documentForm.patchValue({ title: titleValue })
+                this.documentForm.patchValue({title: titleValue})
               },
               complete: () => {
                 // doc changed so we manually check dirty in case title was changed
@@ -230,12 +238,12 @@ export class DocumentDetailComponent
 
           return this.isDirty$.pipe(
             takeUntil(this.unsubscribeNotifier),
-            map((dirty) => ({ doc, dirty }))
+            map((dirty) => ({doc, dirty}))
           )
         })
       )
       .subscribe({
-        next: ({ doc, dirty }) => {
+        next: ({doc, dirty}) => {
           this.openDocumentService.setDirty(doc, dirty)
         },
         error: (error) => {
@@ -283,17 +291,17 @@ export class DocumentDetailComponent
       backdrop: 'static',
     })
     modal.componentInstance.dialogMode = 'create'
-    if (newName) modal.componentInstance.object = { name: newName }
+    if (newName) modal.componentInstance.object = {name: newName}
     modal.componentInstance.success
       .pipe(
         switchMap((newDocumentType) => {
           return this.documentTypeService
             .listAll()
-            .pipe(map((documentTypes) => ({ newDocumentType, documentTypes })))
+            .pipe(map((documentTypes) => ({newDocumentType, documentTypes})))
         })
       )
       .pipe(takeUntil(this.unsubscribeNotifier))
-      .subscribe(({ newDocumentType, documentTypes }) => {
+      .subscribe(({newDocumentType, documentTypes}) => {
         this.documentTypes = documentTypes.results
         this.documentForm.get('document_type').setValue(newDocumentType.id)
       })
@@ -304,19 +312,19 @@ export class DocumentDetailComponent
       backdrop: 'static',
     })
     modal.componentInstance.dialogMode = 'create'
-    if (newName) modal.componentInstance.object = { name: newName }
+    if (newName) modal.componentInstance.object = {name: newName}
     modal.componentInstance.success
       .pipe(
         switchMap((newCorrespondent) => {
           return this.correspondentService
             .listAll()
             .pipe(
-              map((correspondents) => ({ newCorrespondent, correspondents }))
+              map((correspondents) => ({newCorrespondent, correspondents}))
             )
         })
       )
       .pipe(takeUntil(this.unsubscribeNotifier))
-      .subscribe(({ newCorrespondent, correspondents }) => {
+      .subscribe(({newCorrespondent, correspondents}) => {
         this.correspondents = correspondents.results
         this.documentForm.get('correspondent').setValue(newCorrespondent.id)
       })
@@ -327,17 +335,17 @@ export class DocumentDetailComponent
       backdrop: 'static',
     })
     modal.componentInstance.dialogMode = 'create'
-    if (newName) modal.componentInstance.object = { name: newName }
+    if (newName) modal.componentInstance.object = {name: newName}
     modal.componentInstance.success
       .pipe(
         switchMap((newStoragePath) => {
           return this.storagePathService
             .listAll()
-            .pipe(map((storagePaths) => ({ newStoragePath, storagePaths })))
+            .pipe(map((storagePaths) => ({newStoragePath, storagePaths})))
         })
       )
       .pipe(takeUntil(this.unsubscribeNotifier))
-      .subscribe(({ newStoragePath, documentTypes: storagePaths }) => {
+      .subscribe(({newStoragePath, documentTypes: storagePaths}) => {
         this.storagePaths = storagePaths.results
         this.documentForm.get('storage_path').setValue(newStoragePath.id)
       })
@@ -388,22 +396,22 @@ export class DocumentDetailComponent
         switchMap((updateResult) => {
           return this.documentListViewService
             .getNext(this.documentId)
-            .pipe(map((nextDocId) => ({ nextDocId, updateResult })))
+            .pipe(map((nextDocId) => ({nextDocId, updateResult})))
         })
       )
       .pipe(
-        switchMap(({ nextDocId, updateResult }) => {
+        switchMap(({nextDocId, updateResult}) => {
           if (nextDocId && updateResult)
             return this.openDocumentService
               .closeDocument(this.document)
               .pipe(
-                map((closeResult) => ({ updateResult, nextDocId, closeResult }))
+                map((closeResult) => ({updateResult, nextDocId, closeResult}))
               )
         })
       )
       .pipe(first())
       .subscribe({
-        next: ({ updateResult, nextDocId, closeResult }) => {
+        next: ({updateResult, nextDocId, closeResult}) => {
           this.error = null
           this.networkActive = false
           if (closeResult && updateResult && nextDocId) {
