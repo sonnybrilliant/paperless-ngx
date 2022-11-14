@@ -155,9 +155,6 @@
                             (createNew)="createDocumentType($event)" [suggestions]="suggestions?.document_types">
 
                         </app-input-select>
-                        <select class="form-select">
-                          <option *ngFor="let folder of googleSharedFolders" [ngValue]="folder.name">{{folder.name}}</option>
-                        </select>
                     </ng-template>
                 </li>
 
