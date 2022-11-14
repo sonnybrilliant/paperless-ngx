@@ -73,7 +73,10 @@ export class DocumentDetailComponent
   correspondents: PaperlessCorrespondent[];
   documentTypes: PaperlessDocumentType[];
   storagePaths: PaperlessStoragePath[];
-  googleSharedFolders: [{ 'name': 'MINUTES', 'id': 'MINUTES' }];
+  googleSharedFolders: [
+    { 'name': 'MINUTES', 'id': 'MINUTES', 'slug': 'books', 'match': '', 'matching_algorithm': 1, 'is_insensitive': true }
+  ];
+
 
   documentForm: FormGroup = new FormGroup({
     title: new FormControl(''),
@@ -159,7 +162,7 @@ export class DocumentDetailComponent
     this.documentTypeService
       .listAll()
       .pipe(first())
-      .subscribe((result) => (console.log(result.results)));
+      .subscribe((result) => (this.documentTypes = result.results));
 
     this.storagePathService
       .listAll()
