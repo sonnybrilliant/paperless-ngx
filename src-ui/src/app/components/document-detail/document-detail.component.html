@@ -151,8 +151,9 @@
                     <a ngbNavLink i18n>Google Drive</a>
                     <ng-template ngbNavContent>
 
-                        <app-input-select [items]="googleSharedFolders" i18n-title title="Shared folders" [allowNull]="true"
-                            (createNew)="createDocumentType($event)" [suggestions]="suggestions?.document_types"></app-input-select>
+                      <select class="form-select">
+                        <option *ngFor="let folder of googleSharedFolders" [ngValue]="folder.name">{{folder.name}}</option>
+                      </select>
                     </ng-template>
                 </li>
 
