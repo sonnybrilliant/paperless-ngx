@@ -74,7 +74,9 @@ export class DocumentDetailComponent
   documentTypes: PaperlessDocumentType[];
   storagePaths: PaperlessStoragePath[];
   googleSharedFolders: [
-    { 'name': 'MINUTES', 'id': 'MINUTES', 'slug': 'books', 'match': '', 'matching_algorithm': 1, 'is_insensitive': true }
+    {
+      'name': 'MINUTES', 'id': 'MINUTES', 'slug': 'books', 'match': '', 'matching_algorithm': 1, 'is_insensitive': true, 'document_count': 0
+    }
   ];
 
 

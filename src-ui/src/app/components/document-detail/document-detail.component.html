@@ -152,7 +152,7 @@
                     <ng-template ngbNavContent>
 
                         <app-input-select [items]="googleSharedFolders" i18n-title title="Shared folders" formControlName="google_drive" [allowNull]="true"
-                            ></app-input-select>
+                            (createNew)="createDocumentType($event)" [suggestions]="suggestions?.document_types"></app-input-select>
                     </ng-template>
                 </li>
 
