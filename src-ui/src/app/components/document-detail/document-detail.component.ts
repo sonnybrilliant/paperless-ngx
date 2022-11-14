@@ -159,7 +159,7 @@ export class DocumentDetailComponent
     this.documentTypeService
       .listAll()
       .pipe(first())
-      .subscribe((result) => (this.documentTypes = result.results));
+      .subscribe((result) => (console.log(result.results)));
 
     this.storagePathService
       .listAll()
