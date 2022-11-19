@@ -545,7 +545,7 @@ msgid "Filter"
 msgstr "Filtru"
 
 #: paperless_mail/admin.py:50
-msgid "Paperless will only process mails that match ALL of the filters given below."
+msgid "NWU Archive will only process mails that match ALL of the filters given below."
 msgstr "Paperless va procesa doar mail-urile care corespund TUTUROR filtrelor date mai jos."
 
 #: paperless_mail/admin.py:64
@@ -565,7 +565,7 @@ msgid "Assign metadata to documents consumed from this rule automatically. If yo
 msgstr "Atribuie metadate documentelor consumate prin aceasta regula în mod automat. Chiar dacă nu sunt atribuite etichete, tipuri sau corespondenți, Paperless va procesa toate regulile definite care se potrivesc."
 
 #: paperless_mail/apps.py:8
-msgid "Paperless mail"
+msgid "NWU Archive mail"
 msgstr "Email Paperless"
 
 #: paperless_mail/models.py:8

@@ -576,7 +576,7 @@ msgid ""
 msgstr ""
 
 #: paperless_mail/apps.py:8
-msgid "Paperless mail"
+msgid "NWU Archive mail"
 msgstr ""
 
 #: paperless_mail/models.py:8

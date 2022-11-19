@@ -373,11 +373,11 @@ msgid "File type %(type)s not supported"
 msgstr "crwdns2694:0%(type)scrwdne2694:0"
 
 #: documents/templates/index.html:22
-msgid "Paperless-ng is loading..."
+msgid "NWU Archive is loading..."
 msgstr "crwdns2696:0crwdne2696:0"
 
 #: documents/templates/registration/logged_out.html:14
-msgid "Paperless-ng signed out"
+msgid "NWU Archive signed out"
 msgstr "crwdns2698:0crwdne2698:0"
 
 #: documents/templates/registration/logged_out.html:45
@@ -389,7 +389,7 @@ msgid "Sign in again"
 msgstr "crwdns2702:0crwdne2702:0"
 
 #: documents/templates/registration/login.html:15
-msgid "Paperless-ng sign in"
+msgid "NWU Archive sign in"
 msgstr "crwdns2704:0crwdne2704:0"
 
 #: documents/templates/registration/login.html:47
@@ -465,7 +465,7 @@ msgid "Swedish"
 msgstr "crwdns3448:0crwdne3448:0"
 
 #: paperless/urls.py:120
-msgid "Paperless-ng administration"
+msgid "NWU Archive administration"
 msgstr "crwdns2732:0crwdne2732:0"
 
 #: paperless_mail/admin.py:15
@@ -481,7 +481,7 @@ msgid "Filter"
 msgstr "crwdns2734:0crwdne2734:0"
 
 #: paperless_mail/admin.py:39
-msgid "Paperless will only process mails that match ALL of the filters given below."
+msgid "NWU Archive will only process mails that match ALL of the filters given below."
 msgstr "crwdns2736:0crwdne2736:0"
 
 #: paperless_mail/admin.py:49
@@ -501,7 +501,7 @@ msgid "Assign metadata to documents consumed from this rule automatically. If yo
 msgstr "crwdns2744:0crwdne2744:0"
 
 #: paperless_mail/apps.py:9
-msgid "Paperless mail"
+msgid "NWU Archive mail"
 msgstr "crwdns2746:0crwdne2746:0"
 
 #: paperless_mail/models.py:11

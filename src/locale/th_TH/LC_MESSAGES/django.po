@@ -357,11 +357,11 @@ msgid "File type %(type)s not supported"
 msgstr ""
 
 #: documents/templates/index.html:21
-msgid "Paperless-ng is loading..."
+msgid "NWU Archive is loading..."
 msgstr ""
 
 #: documents/templates/registration/logged_out.html:13
-msgid "Paperless-ng signed out"
+msgid "NWU Archive signed out"
 msgstr ""
 
 #: documents/templates/registration/logged_out.html:41
@@ -373,7 +373,7 @@ msgid "Sign in again"
 msgstr ""
 
 #: documents/templates/registration/login.html:13
-msgid "Paperless-ng sign in"
+msgid "NWU Archive sign in"
 msgstr ""
 
 #: documents/templates/registration/login.html:42
@@ -429,7 +429,7 @@ msgid "Romanian"
 msgstr ""
 
 #: paperless/urls.py:118
-msgid "Paperless-ng administration"
+msgid "NWU Archive administration"
 msgstr ""
 
 #: paperless_mail/admin.py:25
@@ -437,7 +437,7 @@ msgid "Filter"
 msgstr ""
 
 #: paperless_mail/admin.py:27
-msgid "Paperless will only process mails that match ALL of the filters given below."
+msgid "NWU Archive will only process mails that match ALL of the filters given below."
 msgstr ""
 
 #: paperless_mail/admin.py:37
@@ -457,7 +457,7 @@ msgid "Assign metadata to documents consumed from this rule automatically. If yo
 msgstr ""
 
 #: paperless_mail/apps.py:9
-msgid "Paperless mail"
+msgid "NWU Archive mail"
 msgstr ""
 
 #: paperless_mail/models.py:11

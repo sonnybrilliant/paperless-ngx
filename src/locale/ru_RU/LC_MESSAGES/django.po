@@ -545,7 +545,7 @@ msgid "Filter"
 msgstr "Фильтр"
 
 #: paperless_mail/admin.py:50
-msgid "Paperless will only process mails that match ALL of the filters given below."
+msgid "NWU Archive will only process mails that match ALL of the filters given below."
 msgstr "Paperless будет обрабатывать только те письма, которые соответствуют всем фильтрам, указанным ниже."
 
 #: paperless_mail/admin.py:64
@@ -565,7 +565,7 @@ msgid "Assign metadata to documents consumed from this rule automatically. If yo
 msgstr "Автоматически назначать метаданные документам, полученным из этого правила. Если вы не назначаете здесь теги, типы или корреспонденты, paperless все равно будут обрабатывать все соответствующие правила, которые вы определили."
 
 #: paperless_mail/apps.py:8
-msgid "Paperless mail"
+msgid "NWU Archive mail"
 msgstr "Безбумажная почта"
 
 #: paperless_mail/models.py:8
