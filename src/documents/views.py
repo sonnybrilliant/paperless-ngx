@@ -7,7 +7,7 @@ import urllib
 import uuid
 import zipfile
 from datetime import datetime
-from time import mktime
+from time import mktime, time
 from unicodedata import normalize
 from urllib.parse import quote
 
@@ -22,6 +22,7 @@ from django.db.models.functions import Lower
 from django.http import Http404
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.translation import get_language
@@ -109,7 +110,7 @@ class IndexView(TemplateView):
         # this translates between these two forms.
         if "-" in lang:
             first = lang[: lang.index("-")]
-            second = lang[lang.index("-") + 1 :]
+            second = lang[lang.index("-") + 1:]
             return f"{first}-{second.upper()}"
         else:
             return lang
@@ -119,8 +120,10 @@ class IndexView(TemplateView):
         context["cookie_prefix"] = settings.COOKIE_PREFIX
         context["username"] = self.request.user.username
         context["full_name"] = self.request.user.get_full_name()
-        context["styles_css"] = f"frontend/{self.get_frontend_language()}/styles.css"
-        context["runtime_js"] = f"frontend/{self.get_frontend_language()}/runtime.js"
+        context[
+            "styles_css"] = f"frontend/{self.get_frontend_language()}/styles.css"
+        context[
+            "runtime_js"] = f"frontend/{self.get_frontend_language()}/runtime.js"
         context[
             "polyfills_js"
         ] = f"frontend/{self.get_frontend_language()}/polyfills.js"
@@ -159,7 +162,8 @@ class CorrespondentViewSet(ModelViewSet):
 class TagViewSet(ModelViewSet):
     model = Tag
 
-    queryset = Tag.objects.annotate(document_count=Count("documents")).order_by(
+    queryset = Tag.objects.annotate(
+        document_count=Count("documents")).order_by(
         Lower("name"),
     )
 
@@ -269,7 +273,8 @@ class DocumentViewSet(
         # Firefox is not able to handle unicode characters in filename field
         # RFC 5987 addresses this issue
         # see https://datatracker.ietf.org/doc/html/rfc5987#section-4.2
-        filename_normalized = normalize("NFKD", filename).encode("ascii", "ignore")
+        filename_normalized = normalize("NFKD", filename).encode("ascii",
+                                                                 "ignore")
         filename_encoded = quote(filename)
         content_disposition = (
             f"{disposition}; "
@@ -314,7 +319,8 @@ class DocumentViewSet(
             "original_mime_type": doc.mime_type,
             "media_filename": doc.filename,
             "has_archive_version": doc.has_archive_version,
-            "original_metadata": self.get_metadata(doc.source_path, doc.mime_type),
+            "original_metadata": self.get_metadata(doc.source_path,
+                                                   doc.mime_type),
             "archive_checksum": doc.archive_checksum,
             "archive_media_filename": doc.archive_filename,
             "original_filename": doc.original_filename,
@@ -340,19 +346,23 @@ class DocumentViewSet(
 
         gen = parse_date_generator(doc.filename, doc.content)
         dates = sorted(
-            {i for i in itertools.islice(gen, settings.NUMBER_OF_SUGGESTED_DATES)},
+            {i for i in
+             itertools.islice(gen, settings.NUMBER_OF_SUGGESTED_DATES)},
         )
 
         return Response(
             {
-                "correspondents": [c.id for c in match_correspondents(doc, classifier)],
+                "correspondents": [c.id for c in
+                                   match_correspondents(doc, classifier)],
                 "tags": [t.id for t in match_tags(doc, classifier)],
                 "document_types": [
                     dt.id for dt in match_document_types(doc, classifier)
                 ],
-                "storage_paths": [dt.id for dt in match_storage_paths(doc, classifier)],
+                "storage_paths": [dt.id for dt in
+                                  match_storage_paths(doc, classifier)],
                 "dates": [
-                    date.strftime("%Y-%m-%d") for date in dates if date is not None
+                    date.strftime("%Y-%m-%d") for date in dates if
+                    date is not None
                 ],
             },
         )
@@ -388,6 +398,40 @@ class DocumentViewSet(
         except (FileNotFoundError, Document.DoesNotExist):
             raise Http404()
 
+    @action(methods=["get"], detail=True)
+    def googleDrive(self, request, pk=None):
+        try:
+            doc = Document.objects.get(id=pk)
+
+            currentUser = request.user
+
+            share_request = {
+                "id": doc.id,
+                "folder": request.GET.get("folder"),
+                "user": currentUser.username,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            # Serializing json
+            json_object = json.dumps(share_request, indent=4)
+
+            if not os.path.exists(settings.REQUEST_DIR):
+                os.makedirs(settings.REQUEST_DIR)
+
+            current_time = time()
+            milli_seconds = int(current_time * 1000)
+
+            # Writing to sample.json
+            with open(f"{settings.REQUEST_DIR}/{milli_seconds}.json",
+                      "w") as outfile:
+                outfile.write(json_object)
+            return JsonResponse({"success": True})
+
+        except FileExistsError:
+            raise Exception(f"Folder already exist {settings.REQUEST_DIR}")
+        except (FileNotFoundError, Document.DoesNotExist):
+            raise Http404()
+
     def getComments(self, doc):
         return [
             {
@@ -417,9 +461,11 @@ class DocumentViewSet(
             try:
                 return Response(self.getComments(doc))
             except Exception as e:
-                logger.warning(f"An error occurred retrieving comments: {str(e)}")
+                logger.warning(
+                    f"An error occurred retrieving comments: {str(e)}")
                 return Response(
-                    {"error": "Error retreiving comments, check logs for more detail."},
+                    {
+                        "error": "Error retreiving comments, check logs for more detail."},
                 )
         elif request.method == "POST":
             try:
@@ -518,7 +564,6 @@ class UnifiedSearchViewSet(DocumentViewSet):
 
 
 class LogViewSet(ViewSet):
-
     permission_classes = (IsAuthenticated,)
 
     log_files = ["paperless", "mail"]
@@ -558,7 +603,6 @@ class SavedViewViewSet(ModelViewSet):
 
 
 class BulkEditView(GenericAPIView):
-
     permission_classes = (IsAuthenticated,)
     serializer_class = BulkEditSerializer
     parser_classes = (parsers.JSONParser,)
@@ -580,13 +624,11 @@ class BulkEditView(GenericAPIView):
 
 
 class PostDocumentView(GenericAPIView):
-
     permission_classes = (IsAuthenticated,)
     serializer_class = PostDocumentSerializer
     parser_classes = (parsers.MultiPartParser,)
 
     def post(self, request, *args, **kwargs):
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -629,7 +671,6 @@ class PostDocumentView(GenericAPIView):
 
 
 class SelectionDataView(GenericAPIView):
-
     permission_classes = (IsAuthenticated,)
     serializer_class = DocumentListSerializer
     parser_classes = (parsers.MultiPartParser, parsers.JSONParser)
@@ -642,25 +683,29 @@ class SelectionDataView(GenericAPIView):
 
         correspondents = Correspondent.objects.annotate(
             document_count=Count(
-                Case(When(documents__id__in=ids, then=1), output_field=IntegerField()),
+                Case(When(documents__id__in=ids, then=1),
+                     output_field=IntegerField()),
             ),
         )
 
         tags = Tag.objects.annotate(
             document_count=Count(
-                Case(When(documents__id__in=ids, then=1), output_field=IntegerField()),
+                Case(When(documents__id__in=ids, then=1),
+                     output_field=IntegerField()),
             ),
         )
 
         types = DocumentType.objects.annotate(
             document_count=Count(
-                Case(When(documents__id__in=ids, then=1), output_field=IntegerField()),
+                Case(When(documents__id__in=ids, then=1),
+                     output_field=IntegerField()),
             ),
         )
 
         storage_paths = StoragePath.objects.annotate(
             document_count=Count(
-                Case(When(documents__id__in=ids, then=1), output_field=IntegerField()),
+                Case(When(documents__id__in=ids, then=1),
+                     output_field=IntegerField()),
             ),
         )
 
@@ -671,10 +716,12 @@ class SelectionDataView(GenericAPIView):
                     for t in correspondents
                 ],
                 "selected_tags": [
-                    {"id": t.id, "document_count": t.document_count} for t in tags
+                    {"id": t.id, "document_count": t.document_count} for t in
+                    tags
                 ],
                 "selected_document_types": [
-                    {"id": t.id, "document_count": t.document_count} for t in types
+                    {"id": t.id, "document_count": t.document_count} for t in
+                    types
                 ],
                 "selected_storage_paths": [
                     {"id": t.id, "document_count": t.document_count}
@@ -687,7 +734,6 @@ class SelectionDataView(GenericAPIView):
 
 
 class SearchAutoCompleteView(APIView):
-
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
@@ -711,14 +757,14 @@ class SearchAutoCompleteView(APIView):
 
 
 class StatisticsView(APIView):
-
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
         documents_total = Document.objects.all().count()
         if Tag.objects.filter(is_inbox_tag=True).exists():
             documents_inbox = (
-                Document.objects.filter(tags__is_inbox_tag=True).distinct().count()
+                Document.objects.filter(
+                    tags__is_inbox_tag=True).distinct().count()
             )
         else:
             documents_inbox = None
@@ -732,7 +778,6 @@ class StatisticsView(APIView):
 
 
 class BulkDownloadView(GenericAPIView):
-
     permission_classes = (IsAuthenticated,)
     serializer_class = BulkDownloadSerializer
     parser_classes = (parsers.JSONParser,)
@@ -798,11 +843,13 @@ class RemoteVersionView(GenericAPIView):
                     remote_version = remote_json["tag_name"]
                     # Basically PEP 616 but that only went in 3.9
                     if remote_version.startswith("ngx-"):
-                        remote_version = remote_version[len("ngx-") :]
+                        remote_version = remote_version[len("ngx-"):]
                 except ValueError:
-                    logger.debug("An error occurred parsing remote version json")
+                    logger.debug(
+                        "An error occurred parsing remote version json")
             except urllib.error.URLError:
-                logger.debug("An error occurred checking for available updates")
+                logger.debug(
+                    "An error occurred checking for available updates")
 
             is_greater_than_current = (
                 packaging_version.parse(
@@ -823,7 +870,8 @@ class RemoteVersionView(GenericAPIView):
 class StoragePathViewSet(ModelViewSet):
     model = StoragePath
 
-    queryset = StoragePath.objects.annotate(document_count=Count("documents")).order_by(
+    queryset = StoragePath.objects.annotate(
+        document_count=Count("documents")).order_by(
         Lower("name"),
     )
 
@@ -832,11 +880,11 @@ class StoragePathViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = StoragePathFilterSet
-    ordering_fields = ("name", "path", "matching_algorithm", "match", "document_count")
+    ordering_fields = (
+        "name", "path", "matching_algorithm", "match", "document_count")
 
 
 class UiSettingsView(GenericAPIView):
-
     permission_classes = (IsAuthenticated,)
     serializer_class = UiSettingsViewSerializer
 
@@ -874,7 +922,6 @@ class UiSettingsView(GenericAPIView):
 
 
 class TasksViewSet(ReadOnlyModelViewSet):
-
     permission_classes = (IsAuthenticated,)
     serializer_class = TasksViewSerializer
 
@@ -882,13 +929,12 @@ class TasksViewSet(ReadOnlyModelViewSet):
         PaperlessTask.objects.filter(
             acknowledged=False,
         )
-        .order_by("created")
-        .reverse()
+            .order_by("created")
+            .reverse()
     )
 
 
 class AcknowledgeTasksView(GenericAPIView):
-
     permission_classes = (IsAuthenticated,)
     serializer_class = AcknowledgeTasksViewSerializer
 

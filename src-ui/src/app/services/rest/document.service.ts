@@ -121,6 +121,14 @@ export class DocumentService extends AbstractPaperlessService<PaperlessDocument>
     return url
   }
 
+  getGoogleDriveUrl(id: number, folder: string = 'MINUTES'): string{
+    let url = this.getResourceUrl(id, 'googleDrive');
+    if (folder){
+      url += '?folder=' + folder;
+    }
+    return url;
+  }
+
   getThumbUrl(id: number): string {
     return this.getResourceUrl(id, 'thumb')
   }
@@ -144,6 +152,12 @@ export class DocumentService extends AbstractPaperlessService<PaperlessDocument>
       this.getResourceUrl(null, 'post_document'),
       formData,
       { reportProgress: true, observe: 'events' }
+    )
+  }
+
+  googleDriveShare(id: number, folder: string){
+    return this.http.get(
+      this.getGoogleDriveUrl(id,folder)
     )
   }
 

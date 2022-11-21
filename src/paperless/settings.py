@@ -40,7 +40,8 @@ def __get_boolean(key: str, default: str = "NO") -> bool:
     Return a boolean value based on whatever the user has supplied in the
     environment based on whether the value "looks like" it's True or not.
     """
-    return bool(os.getenv(key, default).lower() in ("yes", "y", "1", "t", "true"))
+    return bool(
+        os.getenv(key, default).lower() in ("yes", "y", "1", "t", "true"))
 
 
 def __get_int(key: str, default: int) -> int:
@@ -67,23 +68,31 @@ def __get_path(key: str, default: str) -> str:
 # NEVER RUN WITH DEBUG IN PRODUCTION.
 DEBUG = __get_boolean("PAPERLESS_DEBUG", "NO")
 
-
 ###############################################################################
 # Directories                                                                 #
 ###############################################################################
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-STATIC_ROOT = __get_path("PAPERLESS_STATICDIR", os.path.join(BASE_DIR, "..", "static"))
+STATIC_ROOT = __get_path("PAPERLESS_STATICDIR",
+                         os.path.join(BASE_DIR, "..", "static"))
 
-MEDIA_ROOT = __get_path("PAPERLESS_MEDIA_ROOT", os.path.join(BASE_DIR, "..", "media"))
+MEDIA_ROOT = __get_path("PAPERLESS_MEDIA_ROOT",
+                        os.path.join(BASE_DIR, "..", "media"))
+QUEUE_ROOT = __get_path("PAPERLESS_QUEUE_ROOT",
+                        os.path.join(BASE_DIR, "..", "queue"))
 ORIGINALS_DIR = os.path.join(MEDIA_ROOT, "documents", "originals")
 ARCHIVE_DIR = os.path.join(MEDIA_ROOT, "documents", "archive")
 THUMBNAIL_DIR = os.path.join(MEDIA_ROOT, "documents", "thumbnails")
 
-DATA_DIR = __get_path("PAPERLESS_DATA_DIR", os.path.join(BASE_DIR, "..", "data"))
+REQUEST_DIR = os.path.join(QUEUE_ROOT, "request")
+PROCESSED_DIR = os.path.join(QUEUE_ROOT, "processed")
+
+DATA_DIR = __get_path("PAPERLESS_DATA_DIR",
+                      os.path.join(BASE_DIR, "..", "data"))
 
 TRASH_DIR = os.getenv("PAPERLESS_TRASH_DIR")
+AWS_S3_GOOGLE_DRIVE_DIR = os.getenv("AWS_GOOGLE_DRIVE_INTEGRATION_FOLDER")
 
 # Lock file for synchronizing changes to the MEDIA directory across multiple
 # threads.
@@ -91,7 +100,8 @@ MEDIA_LOCK = os.path.join(MEDIA_ROOT, "media.lock")
 INDEX_DIR = os.path.join(DATA_DIR, "index")
 MODEL_FILE = os.path.join(DATA_DIR, "classification_model.pickle")
 
-LOGGING_DIR = __get_path("PAPERLESS_LOGGING_DIR", os.path.join(DATA_DIR, "log"))
+LOGGING_DIR = __get_path("PAPERLESS_LOGGING_DIR",
+                         os.path.join(DATA_DIR, "log"))
 
 CONSUMPTION_DIR = __get_path(
     "PAPERLESS_CONSUMPTION_DIR",
@@ -108,28 +118,29 @@ SCRATCH_DIR = __get_path(
 # Application Definition                                                      #
 ###############################################################################
 
-env_apps = os.getenv("PAPERLESS_APPS").split(",") if os.getenv("PAPERLESS_APPS") else []
+env_apps = os.getenv("PAPERLESS_APPS").split(",") if os.getenv(
+    "PAPERLESS_APPS") else []
 
 INSTALLED_APPS = [
-    "whitenoise.runserver_nostatic",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "corsheaders",
-    "django_extensions",
-    "paperless",
-    "documents.apps.DocumentsConfig",
-    "paperless_tesseract.apps.PaperlessTesseractConfig",
-    "paperless_text.apps.PaperlessTextConfig",
-    "paperless_mail.apps.PaperlessMailConfig",
-    "django.contrib.admin",
-    "rest_framework",
-    "rest_framework.authtoken",
-    "django_filters",
-    "django_q",
-] + env_apps
+                     "whitenoise.runserver_nostatic",
+                     "django.contrib.auth",
+                     "django.contrib.contenttypes",
+                     "django.contrib.sessions",
+                     "django.contrib.messages",
+                     "django.contrib.staticfiles",
+                     "corsheaders",
+                     "django_extensions",
+                     "paperless",
+                     "documents.apps.DocumentsConfig",
+                     "paperless_tesseract.apps.PaperlessTesseractConfig",
+                     "paperless_text.apps.PaperlessTextConfig",
+                     "paperless_mail.apps.PaperlessMailConfig",
+                     "django.contrib.admin",
+                     "rest_framework",
+                     "rest_framework.authtoken",
+                     "django_filters",
+                     "django_q",
+                 ] + env_apps
 
 if DEBUG:
     INSTALLED_APPS.append("channels")
@@ -214,7 +225,8 @@ CHANNEL_LAYERS = {
 AUTO_LOGIN_USERNAME = os.getenv("PAPERLESS_AUTO_LOGIN_USERNAME")
 
 if AUTO_LOGIN_USERNAME:
-    _index = MIDDLEWARE.index("django.contrib.auth.middleware.AuthenticationMiddleware")
+    _index = MIDDLEWARE.index(
+        "django.contrib.auth.middleware.AuthenticationMiddleware")
     # This overrides everything the auth middleware is doing but still allows
     # regular login in case the provided user does not exist.
     MIDDLEWARE.insert(_index + 1, "paperless.auth.AutoLoginMiddleware")
@@ -241,7 +253,6 @@ if DEBUG:
 else:
     X_FRAME_OPTIONS = "SAMEORIGIN"
 
-
 # The next 3 settings can also be set using just PAPERLESS_URL
 _csrf_origins = os.getenv("PAPERLESS_CSRF_TRUSTED_ORIGINS")
 if _csrf_origins:
@@ -251,7 +262,8 @@ else:
 
 # We allow CORS from localhost:8000
 CORS_ALLOWED_ORIGINS = tuple(
-    os.getenv("PAPERLESS_CORS_ALLOWED_HOSTS", "http://localhost:8000").split(","),
+    os.getenv("PAPERLESS_CORS_ALLOWED_HOSTS", "http://localhost:8000").split(
+        ","),
 )
 
 if DEBUG:
@@ -285,7 +297,8 @@ SECRET_KEY = os.getenv(
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",  # noqa: E501
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        # noqa: E501
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -365,7 +378,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 LANGUAGE_CODE = "en-us"
 
 LANGUAGES = [
-    ("en-us", _("English (US)")),  # needs to be first to act as fallback language
+    ("en-us", _("English (US)")),
+    # needs to be first to act as fallback language
     ("be-by", _("Belarusian")),
     ("cs-cz", _("Czech")),
     ("da-dk", _("Danish")),
@@ -510,7 +524,8 @@ CONSUMER_INOTIFY_DELAY: Final[float] = __get_float(
     0.5,
 )
 
-CONSUMER_DELETE_DUPLICATES = __get_boolean("PAPERLESS_CONSUMER_DELETE_DUPLICATES")
+CONSUMER_DELETE_DUPLICATES = __get_boolean(
+    "PAPERLESS_CONSUMER_DELETE_DUPLICATES")
 
 CONSUMER_RECURSIVE = __get_boolean("PAPERLESS_CONSUMER_RECURSIVE")
 
@@ -519,7 +534,8 @@ CONSUMER_IGNORE_PATTERNS = list(
     json.loads(
         os.getenv(
             "PAPERLESS_CONSUMER_IGNORE_PATTERNS",
-            '[".DS_STORE/*", "._*", ".stfolder/*", ".stversions/*", ".localized/*", "desktop.ini"]',  # noqa: E501
+            '[".DS_STORE/*", "._*", ".stfolder/*", ".stversions/*", ".localized/*", "desktop.ini"]',
+            # noqa: E501
         ),
     ),
 )
@@ -534,7 +550,8 @@ CONSUMER_BARCODE_TIFF_SUPPORT = __get_boolean(
     "PAPERLESS_CONSUMER_BARCODE_TIFF_SUPPORT",
 )
 
-CONSUMER_BARCODE_STRING = os.getenv("PAPERLESS_CONSUMER_BARCODE_STRING", "PATCHT")
+CONSUMER_BARCODE_STRING = os.getenv("PAPERLESS_CONSUMER_BARCODE_STRING",
+                                    "PATCHT")
 
 OCR_PAGES = int(os.getenv("PAPERLESS_OCR_PAGES", 0))
 
@@ -562,7 +579,8 @@ OCR_ROTATE_PAGES_THRESHOLD = float(
 
 OCR_MAX_IMAGE_PIXELS: Optional[int] = None
 if os.environ.get("PAPERLESS_OCR_MAX_IMAGE_PIXELS") is not None:
-    OCR_MAX_IMAGE_PIXELS: int = int(os.environ.get("PAPERLESS_OCR_MAX_IMAGE_PIXELS"))
+    OCR_MAX_IMAGE_PIXELS: int = int(
+        os.environ.get("PAPERLESS_OCR_MAX_IMAGE_PIXELS"))
 
 OCR_USER_ARGS = os.getenv("PAPERLESS_OCR_USER_ARGS", "{}")
 
@@ -575,7 +593,6 @@ CONVERT_TMPDIR = os.getenv("PAPERLESS_CONVERT_TMPDIR")
 CONVERT_MEMORY_LIMIT = os.getenv("PAPERLESS_CONVERT_MEMORY_LIMIT")
 
 GS_BINARY = os.getenv("PAPERLESS_GS_BINARY", "gs")
-
 
 # Pre-2.x versions of Paperless stored your documents locally with GPG
 # encryption, but that is no longer the default.  This behaviour is still

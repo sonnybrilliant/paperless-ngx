@@ -73,15 +73,10 @@ export class DocumentDetailComponent
   correspondents: PaperlessCorrespondent[];
   documentTypes: PaperlessDocumentType[];
   storagePaths: PaperlessStoragePath[];
-  googleSharedFolders: [
-    {
-      'name': 'MINUTES', 'id': 'MINUTES', 'slug': 'books', 'match': '', 'matching_algorithm': 1, 'is_insensitive': true, 'document_count': 0
-    }
-  ];
-
 
   documentForm: FormGroup = new FormGroup({
     title: new FormControl(''),
+    googleDriveShare: new FormControl(''),
     content: new FormControl(''),
     created_date: new FormControl(),
     correspondent: new FormControl(),
@@ -101,6 +96,7 @@ export class DocumentDetailComponent
 
   requiresPassword: boolean = false;
   password: string;
+
 
   ogDate: Date;
 
@@ -133,6 +129,8 @@ export class DocumentDetailComponent
     private storagePathService: StoragePathService
   ) {
   }
+
+  activeTab = 1;
 
   titleKeyUp(event) {
     this.titleSubject.next(event.target?.value);
@@ -386,6 +384,30 @@ export class DocumentDetailComponent
           this.error = null
         },
         error: (error) => {
+          this.networkActive = false
+          this.error = error.error
+        },
+      })
+  }
+
+  saveGoogleDrive() {
+    this.networkActive = true
+
+    this.documentsService
+      .googleDriveShare(this.documentId, this.documentForm.get('googleDriveShare').value)
+      .subscribe({
+        next: (result) => {
+          this.toastService.showInfo(
+            'Your document was successfully queued for Google Drive share. Check you google drive folder'
+          )
+
+          this.networkActive = false
+          this.error = null
+        },
+        error: (error) => {
+          this.toastService.showError(
+            'Error occurred while queueing your document for Google drive share.'
+          )
           this.networkActive = false
           this.error = error.error
         },
