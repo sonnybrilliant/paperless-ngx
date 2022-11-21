@@ -22,6 +22,7 @@ elif os.path.exists("/etc/paperless.conf"):
 elif os.path.exists("/usr/local/etc/paperless.conf"):
     load_dotenv("/usr/local/etc/paperless.conf")
 elif os.path.exists("/home/ubuntu/source/paperless-ngx/paperless.conf"):
+    load_dotenv("/home/ubuntu/source/paperless-ngx/paperless.conf")
 
 # There are multiple levels of concurrency in paperless:
 #  - Multiple consumers may be run in parallel.
